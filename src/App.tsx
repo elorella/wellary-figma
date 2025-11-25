@@ -36,8 +36,10 @@ export default function App() {
   const [selectedDate, setSelectedDate] = useState<Date>(
     new Date(),
   );
-  const [currentPage, setCurrentPage] = useState<string>('home');
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [currentPage, setCurrentPage] =
+    useState<string>("home");
+  const [isSidebarCollapsed, setIsSidebarCollapsed] =
+    useState(false);
 
   // Load logs from localStorage on mount
   useEffect(() => {
@@ -244,7 +246,9 @@ export default function App() {
 
     // Check for weight celebration
     if (category === "weight") {
-      const newWeight = parseFloat(content);
+      // Replace comma with period for parsing (support both decimal separators)
+      const normalizedContent = content.replace(',', '.');
+      const newWeight = parseFloat(normalizedContent);
       if (!isNaN(newWeight)) {
         // Get yesterday's date
         const yesterday = new Date(selectedDate);
@@ -261,15 +265,19 @@ export default function App() {
         );
 
         if (yesterdayWeightLog) {
+          // Also normalize yesterday's weight (it might have comma or period)
+          const normalizedYesterdayContent = yesterdayWeightLog.content.replace(',', '.');
           const yesterdayWeight = parseFloat(
-            yesterdayWeightLog.content,
+            normalizedYesterdayContent,
           );
           if (
             !isNaN(yesterdayWeight) &&
             newWeight < yesterdayWeight
           ) {
             const differenceKg = yesterdayWeight - newWeight;
-            const differenceGrams = Math.round(differenceKg * 1000);
+            const differenceGrams = Math.round(
+              differenceKg * 1000,
+            );
             return `celebration:${differenceGrams}`; // Return difference in grams
           }
         }
@@ -312,7 +320,7 @@ export default function App() {
     }
 
     switch (currentPage) {
-      case 'home':
+      case "home":
         return (
           <LandingPage
             logs={logs}
@@ -321,15 +329,19 @@ export default function App() {
             onDeleteLog={deleteLog}
             onDateChange={handleDateChange}
             isSidebarCollapsed={isSidebarCollapsed}
-            onSidebarToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+            onSidebarToggle={() =>
+              setIsSidebarCollapsed(!isSidebarCollapsed)
+            }
             onPageChange={handlePageChange}
           />
         );
-      case 'fruid-exchange':
+      case "fruid-exchange":
         return (
           <FruidExchangeList
             isSidebarCollapsed={isSidebarCollapsed}
-            onSidebarToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+            onSidebarToggle={() =>
+              setIsSidebarCollapsed(!isSidebarCollapsed)
+            }
             onPageChange={handlePageChange}
           />
         );
@@ -342,7 +354,9 @@ export default function App() {
             onDeleteLog={deleteLog}
             onDateChange={handleDateChange}
             isSidebarCollapsed={isSidebarCollapsed}
-            onSidebarToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+            onSidebarToggle={() =>
+              setIsSidebarCollapsed(!isSidebarCollapsed)
+            }
             onPageChange={handlePageChange}
           />
         );

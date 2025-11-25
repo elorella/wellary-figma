@@ -193,7 +193,9 @@ export function CategoryInput({ category, onAddLog, onBack, logs, selectedDate }
         toast.error('Please enter your weight');
         return;
       }
-      const weightValue = parseFloat(content);
+      // Replace comma with period for parsing (support both decimal separators)
+      const normalizedContent = content.replace(',', '.');
+      const weightValue = parseFloat(normalizedContent);
       if (isNaN(weightValue) || weightValue <= 0) {
         toast.error('Please enter a valid numeric weight');
         return;
@@ -415,8 +417,8 @@ export function CategoryInput({ category, onAddLog, onBack, logs, selectedDate }
                   value={content}
                   onChange={(e) => {
                     const value = e.target.value;
-                    // Only allow numbers and one decimal point
-                    if (value === '' || /^\d*\.?\d*$/.test(value)) {
+                    // Allow numbers and both decimal separators (. and ,)
+                    if (value === '' || /^[\d,\.]*$/.test(value)) {
                       setContent(value);
                     }
                   }}
