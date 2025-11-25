@@ -1,0 +1,39 @@
+name: Build UI
+
+on:
+  push:
+    paths:
+      - 'wellary-figma/ui/**' # Trigger only when changes are made in the UI folder
+  pull_request:
+    paths:
+      - 'wellary-figma/ui/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18 # Use the Node.js version compatible with your project
+
+      # Step 3: Install dependencies
+      - name: Install dependencies
+        run: npm ci
+        working-directory: wellary-figma/ui
+
+      # Step 4: Build the project
+      - name: Build the UI
+        run: npm run build
+        working-directory: wellary-figma/ui
+
+      # Step 5: Verify the build (optional)
+      - name: Verify build output
+        run: ls -la dist
+        working-directory: wellary-figma/ui
