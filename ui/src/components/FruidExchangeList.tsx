@@ -1,6 +1,4 @@
-import { Sidebar } from "./Sidebar";
 import { Card } from "./ui/card";
-import { ProfileDropdown } from "./ProfileDropdown";
 
 interface FruidExchangeListProps {
   isSidebarCollapsed: boolean;
@@ -350,32 +348,13 @@ export function FruidExchangeList({
   onLogout,
 }: FruidExchangeListProps) {
   return (
-    <div
-      className={`transition-all duration-300 ${isSidebarCollapsed ? "ml-16" : "ml-64"}`}
-    >
-      <Sidebar
-        isCollapsed={isSidebarCollapsed}
-        onToggle={onSidebarToggle}
-        activePage="fruid-exchange"
-        onPageChange={onPageChange}
-      />
-
-      <div className="max-w-7xl mx-auto p-4 md:p-6 pb-8">
-        {/* Header with Profile Dropdown */}
-        <div className="mb-8 mt-2">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-foreground mb-1">
-                Meyve Değişim Listesi
-              </h1>
-            </div>
-            <ProfileDropdown
-              userEmail={userEmail}
-              onPageChange={onPageChange}
-              onLogout={onLogout}
-            />
-          </div>
-        </div>
+    <div className="max-w-7xl mx-auto p-4 md:p-6 pb-8">
+      {/* Header */}
+      <div className="mb-8 mt-2">
+        <h1 className="text-foreground mb-1">
+          Meyve Değişim Listesi
+        </h1>
+      </div>
 
         {/* Header info card */}
         <Card className="p-6 rounded-2xl border-border bg-emerald-50 mb-6">
@@ -587,6 +566,5 @@ export function FruidExchangeList({
           </Card>
         </div>
       </div>
-    </div>
   );
 }

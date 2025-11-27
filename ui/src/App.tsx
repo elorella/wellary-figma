@@ -4,6 +4,10 @@ import { CategoryInput } from "./components/CategoryInput";
 import { FruidExchangeList } from "./components/FruidExchangeList";
 import { Login } from "./components/Login";
 import { Toaster } from "./components/ui/sonner";
+import { Sidebar } from "./components/Sidebar";
+import { ProfileDropdown } from "./components/ProfileDropdown";
+import { ArrowLeft } from "lucide-react";
+import { Button } from "./components/ui/button";
 
 export type Category =
   | "weight"
@@ -331,7 +335,7 @@ export default function App() {
     localStorage.removeItem("wellaryAuth");
   };
 
-  const renderPage = () => {
+  const renderMainContent = () => {
     if (selectedCategory) {
       return (
         <CategoryInput
@@ -340,9 +344,6 @@ export default function App() {
           onBack={handleBack}
           logs={logs}
           selectedDate={selectedDate}
-          userEmail={userEmail}
-          onPageChange={handlePageChange}
-          onLogout={handleLogout}
         />
       );
     }
@@ -409,8 +410,51 @@ export default function App() {
 
   return (
     <>
-      <div className="min-h-screen bg-background">
-        {renderPage()}
+      <div className="flex min-h-screen bg-background">
+        {/* Sidebar */}
+        <Sidebar
+          isCollapsed={isSidebarCollapsed}
+          onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+          activePage={selectedCategory ? "home" : currentPage}
+          onPageChange={handlePageChange}
+        />
+
+        {/* Main Content Area */}
+        <div className={`flex-1 flex flex-col transition-all duration-300 ${isSidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
+          {/* Top Header */}
+          <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+            <div className="flex h-16 items-center justify-between px-6">
+              <div className="flex items-center gap-4">
+                {selectedCategory && (
+                  <>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={handleBack}
+                      className="rounded-xl"
+                    >
+                      <ArrowLeft className="h-5 w-5" />
+                    </Button>
+                    <h1 className="text-xl">
+                      {selectedCategory.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                    </h1>
+                  </>
+                )}
+              </div>
+              
+              <ProfileDropdown
+                userEmail={userEmail}
+                onPageChange={handlePageChange}
+                onLogout={handleLogout}
+              />
+            </div>
+          </header>
+
+          {/* Page Content */}
+          <main className="flex-1 overflow-auto">
+            {renderMainContent()}
+          </main>
+        </div>
       </div>
       <Toaster />
     </>

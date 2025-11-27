@@ -30,8 +30,6 @@ import {
 import { Calendar } from "./ui/calendar";
 import { Category, LogItem } from "../App";
 import { useState } from "react";
-import { Sidebar } from "./Sidebar";
-import { ProfileDropdown } from "./ProfileDropdown";
 
 interface LandingPageProps {
   logs: LogItem[];
@@ -287,17 +285,7 @@ export function LandingPage({
   };
 
   return (
-    <div
-      className={`transition-all duration-300 ${isSidebarCollapsed ? "ml-16" : "ml-64"}`}
-    >
-      <Sidebar
-        isCollapsed={isSidebarCollapsed}
-        onToggle={onSidebarToggle}
-        activePage="home"
-        onPageChange={onPageChange}
-      />
-
-      <div className="max-w-6xl mx-auto p-4 md:p-6 pb-8">
+    <div className="max-w-6xl mx-auto p-4 md:p-6 pb-8">
         {/* Date Header with Picker */}
         <div className="mb-8 mt-2">
           <div className="flex items-center justify-between mb-4">
@@ -368,12 +356,7 @@ export function LandingPage({
                 </Button>
               </div>
 
-              {/* Profile Dropdown */}
-              <ProfileDropdown
-                userEmail={userEmail}
-                onPageChange={onPageChange}
-                onLogout={onLogout}
-              />
+
             </div>
           </div>
         </div>
@@ -482,6 +465,5 @@ export function LandingPage({
           )}
         </div>
       </div>
-    </div>
   );
 }

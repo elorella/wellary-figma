@@ -1,7 +1,4 @@
-import { ArrowLeft } from 'lucide-react';
 import { Category, LogItem } from '../App';
-import { Button } from './ui/button';
-import { ProfileDropdown } from './ProfileDropdown';
 import { FoodCategoryInput } from './FoodCategoryInput';
 import { WeightInput } from './WeightInput';
 import { TimeInput } from './TimeInput';
@@ -17,9 +14,6 @@ interface CategoryInputProps {
   onBack: () => void;
   logs: LogItem[];
   selectedDate: Date;
-  userEmail?: string;
-  onPageChange?: (page: string) => void;
-  onLogout?: () => void;
 }
 
 export function CategoryInput({
@@ -28,9 +22,6 @@ export function CategoryInput({
   onBack,
   logs,
   selectedDate,
-  userEmail,
-  onPageChange,
-  onLogout,
 }: CategoryInputProps) {
   const handleSubmit = (content: string) => {
     onAddLog(category, content);
@@ -151,35 +142,10 @@ export function CategoryInput({
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center justify-between">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onBack}
-            className="rounded-xl"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          
-          {userEmail && (
-            <ProfileDropdown
-              userEmail={userEmail}
-              onPageChange={onPageChange}
-              onLogout={onLogout}
-            />
-          )}
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="container max-w-2xl py-8">
-        <div className="bg-card rounded-2xl border p-8 shadow-sm">
-          {renderInput()}
-        </div>
-      </main>
+    <div className="max-w-3xl mx-auto p-6">
+      <div className="bg-card rounded-2xl border p-8 shadow-sm">
+        {renderInput()}
+      </div>
     </div>
   );
 }
