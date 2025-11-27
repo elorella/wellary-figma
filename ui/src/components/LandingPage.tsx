@@ -31,6 +31,7 @@ import { Calendar } from "./ui/calendar";
 import { Category, LogItem } from "../App";
 import { useState } from "react";
 import { Sidebar } from "./Sidebar";
+import { ProfileDropdown } from "./ProfileDropdown";
 
 interface LandingPageProps {
   logs: LogItem[];
@@ -41,6 +42,8 @@ interface LandingPageProps {
   isSidebarCollapsed: boolean;
   onSidebarToggle: () => void;
   onPageChange: (page: string) => void;
+  userEmail?: string;
+  onLogout?: () => void;
 }
 
 interface CategoryConfig {
@@ -183,6 +186,8 @@ export function LandingPage({
   isSidebarCollapsed,
   onSidebarToggle,
   onPageChange,
+  userEmail = "user@example.com",
+  onLogout,
 }: LandingPageProps) {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
@@ -204,13 +209,6 @@ export function LandingPage({
   );
 
   const formatDate = () => {
-    const today = new Date().toISOString().split("T")[0];
-    const isToday = selectedDateStr === today;
-
-    if (isToday) {
-      return "Today";
-    }
-
     return selectedDate.toLocaleDateString("en-US", {
       weekday: "long",
       year: "numeric",
@@ -282,6 +280,12 @@ export function LandingPage({
     );
   };
 
+  const getUserInitials = () => {
+    if (!userEmail) return "U";
+    const firstLetter = userEmail.charAt(0).toUpperCase();
+    return firstLetter;
+  };
+
   return (
     <div
       className={`transition-all duration-300 ${isSidebarCollapsed ? "ml-16" : "ml-64"}`}
@@ -299,70 +303,77 @@ export function LandingPage({
           <div className="flex items-center justify-between mb-4">
             <div>
               <h1 className="text-foreground mb-1">
-                {formatDate()}
+                Great to see you {getUserInitials()}.
               </h1>
-              <p className="text-muted-foreground">
-                Track your daily wellness
-              </p>
             </div>
 
-            <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={goToPreviousDay}
-                className="h-9 w-9 rounded-xl hover:bg-gray-100"
-              >
-                <ChevronLeft
-                  className="w-5 h-5"
-                  strokeWidth={2}
-                />
-              </Button>
-
-              <Popover
-                open={isCalendarOpen}
-                onOpenChange={setIsCalendarOpen}
-              >
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="px-4 rounded-xl hover:bg-gray-50 border-gray-200"
-                  >
-                    <CalendarIcon
-                      className="w-4 h-4 mr-2"
-                      strokeWidth={2}
-                    />
-                    {formatDateShort()}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent
-                  className="w-auto p-0 rounded-2xl"
-                  align="start"
+            <div className="flex items-center gap-3">
+              {/* Date Navigation */}
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={goToPreviousDay}
+                  className="h-9 w-9 rounded-xl hover:bg-gray-100"
                 >
-                  <Calendar
-                    mode="single"
-                    selected={selectedDate}
-                    onSelect={handleCalendarSelect}
-                    initialFocus
-                    disabled={(date) =>
-                      disableFutureDates(date)
-                    }
+                  <ChevronLeft
+                    className="w-5 h-5"
+                    strokeWidth={2}
                   />
-                </PopoverContent>
-              </Popover>
+                </Button>
 
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={goToNextDay}
-                className="h-9 w-9 rounded-xl hover:bg-gray-100"
-                disabled={isNextDayDisabled()}
-              >
-                <ChevronRight
-                  className="w-5 h-5"
-                  strokeWidth={2}
-                />
-              </Button>
+                <Popover
+                  open={isCalendarOpen}
+                  onOpenChange={setIsCalendarOpen}
+                >
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="px-4 rounded-xl hover:bg-gray-50 border-gray-200"
+                    >
+                      <CalendarIcon
+                        className="w-4 h-4 mr-2"
+                        strokeWidth={2}
+                      />
+                      {formatDateShort()}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    className="w-auto p-0 rounded-2xl"
+                    align="start"
+                  >
+                    <Calendar
+                      mode="single"
+                      selected={selectedDate}
+                      onSelect={handleCalendarSelect}
+                      initialFocus
+                      disabled={(date) =>
+                        disableFutureDates(date)
+                      }
+                    />
+                  </PopoverContent>
+                </Popover>
+
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={goToNextDay}
+                  className="h-9 w-9 rounded-xl hover:bg-gray-100"
+                  disabled={isNextDayDisabled()}
+                >
+                  <ChevronRight
+                    className="w-5 h-5"
+                    strokeWidth={2}
+                  />
+                </Button>
+              </div>
+
+              {/* Profile Dropdown */}
+              <ProfileDropdown
+                userEmail={userEmail}
+                onPageChange={onPageChange}
+                onLogout={onLogout}
+              />
             </div>
           </div>
         </div>

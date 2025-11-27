@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { ArrowLeft } from 'lucide-react';
 import { Category, LogItem } from '../App';
 import { toast } from 'sonner@2.0.3';
+import { ProfileDropdown } from './ProfileDropdown';
 
 interface CategoryInputProps {
   category: Category;
@@ -15,6 +16,9 @@ interface CategoryInputProps {
   onBack: () => void;
   logs: LogItem[];
   selectedDate: Date;
+  userEmail?: string;
+  onPageChange?: (page: string) => void;
+  onLogout?: () => void;
 }
 
 const categoryLabels: Record<Category, string> = {
@@ -65,7 +69,7 @@ const activityOptions = [
   'Others',
 ];
 
-export function CategoryInput({ category, onAddLog, onBack, logs, selectedDate }: CategoryInputProps) {
+export function CategoryInput({ category, onAddLog, onBack, logs, selectedDate, userEmail, onPageChange, onLogout }: CategoryInputProps) {
   // Find previous weight value if it exists
   const getPreviousWeight = () => {
     if (category !== 'weight') return '';
@@ -239,14 +243,21 @@ export function CategoryInput({ category, onAddLog, onBack, logs, selectedDate }
 
   return (
     <div className="max-w-2xl mx-auto p-4 md:p-6">
-      <Button
-        variant="ghost"
-        onClick={onBack}
-        className="mb-6 -ml-2 hover:bg-gray-100"
-      >
-        <ArrowLeft className="w-5 h-5 mr-2" strokeWidth={2} />
-        Back
-      </Button>
+      <div className="flex items-center justify-between mb-6">
+        <Button
+          variant="ghost"
+          onClick={onBack}
+          className="-ml-2 hover:bg-gray-100"
+        >
+          <ArrowLeft className="w-5 h-5 mr-2" strokeWidth={2} />
+          Back
+        </Button>
+        <ProfileDropdown 
+          userEmail={userEmail}
+          onPageChange={onPageChange}
+          onLogout={onLogout}
+        />
+      </div>
 
       <div className="bg-white rounded-2xl p-6 border border-border shadow-sm">
         <div className="mb-6">

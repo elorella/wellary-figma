@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { LandingPage } from "./components/LandingPage";
 import { CategoryInput } from "./components/CategoryInput";
 import { FruidExchangeList } from "./components/FruidExchangeList";
+import { Login } from "./components/Login";
 import { Toaster } from "./components/ui/sonner";
 
 export type Category =
@@ -30,6 +31,8 @@ export interface LogItem {
 }
 
 export default function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
   const [logs, setLogs] = useState<LogItem[]>([]);
   const [selectedCategory, setSelectedCategory] =
     useState<Category | null>(null);
@@ -40,6 +43,16 @@ export default function App() {
     useState<string>("home");
   const [isSidebarCollapsed, setIsSidebarCollapsed] =
     useState(false);
+
+  // Check for existing authentication on mount
+  useEffect(() => {
+    const savedAuth = localStorage.getItem("wellaryAuth");
+    if (savedAuth) {
+      const authData = JSON.parse(savedAuth);
+      setIsAuthenticated(true);
+      setUserEmail(authData.email);
+    }
+  }, []);
 
   // Load logs from localStorage on mount
   useEffect(() => {
@@ -306,6 +319,18 @@ export default function App() {
     setSelectedCategory(null); // Clear category when navigating
   };
 
+  const handleLoginSuccess = (email: string) => {
+    setIsAuthenticated(true);
+    setUserEmail(email);
+    localStorage.setItem("wellaryAuth", JSON.stringify({ email }));
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setUserEmail("");
+    localStorage.removeItem("wellaryAuth");
+  };
+
   const renderPage = () => {
     if (selectedCategory) {
       return (
@@ -315,6 +340,9 @@ export default function App() {
           onBack={handleBack}
           logs={logs}
           selectedDate={selectedDate}
+          userEmail={userEmail}
+          onPageChange={handlePageChange}
+          onLogout={handleLogout}
         />
       );
     }
@@ -333,6 +361,8 @@ export default function App() {
               setIsSidebarCollapsed(!isSidebarCollapsed)
             }
             onPageChange={handlePageChange}
+            userEmail={userEmail}
+            onLogout={handleLogout}
           />
         );
       case "fruid-exchange":
@@ -343,6 +373,8 @@ export default function App() {
               setIsSidebarCollapsed(!isSidebarCollapsed)
             }
             onPageChange={handlePageChange}
+            userEmail={userEmail}
+            onLogout={handleLogout}
           />
         );
       default:
@@ -358,10 +390,22 @@ export default function App() {
               setIsSidebarCollapsed(!isSidebarCollapsed)
             }
             onPageChange={handlePageChange}
+            userEmail={userEmail}
+            onLogout={handleLogout}
           />
         );
     }
   };
+
+  // If not authenticated, show login page
+  if (!isAuthenticated) {
+    return (
+      <>
+        <Login onLoginSuccess={handleLoginSuccess} />
+        <Toaster />
+      </>
+    );
+  }
 
   return (
     <>
