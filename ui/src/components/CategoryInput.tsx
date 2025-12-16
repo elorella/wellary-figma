@@ -10,7 +10,7 @@ import { StomachFeelingInput } from './StomachFeelingInput';
 
 interface CategoryInputProps {
   category: Category;
-  onAddLog: (category: Category, content: string) => string | void;
+  onAddLog: (category: Category, content: string, imageUrl?: string) => string | void;
   onBack: () => void;
   logs: LogItem[];
   selectedDate: Date;
@@ -23,14 +23,14 @@ export function CategoryInput({
   logs,
   selectedDate,
 }: CategoryInputProps) {
-  const handleSubmit = (content: string) => {
-    onAddLog(category, content);
+  const handleSubmit = (content: string, imageUrl?: string) => {
+    onAddLog(category, content, imageUrl);
   };
 
   const getCategoryDisplayName = () => {
     const names: Record<Category, string> = {
-      weight: 'Weight',
       'wake-up-time': 'Wake Up Time',
+      weight: 'Weight',
       activity: 'Activity',
       shower: 'Shower',
       breakfast: 'Breakfast',

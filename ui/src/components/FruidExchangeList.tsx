@@ -386,9 +386,6 @@ export function FruidExchangeList({
                       Yiyecek Adı
                     </th>
                     <th className="px-4 py-3 text-left border-b border-purple-200">
-                      İngilizce Adı
-                    </th>
-                    <th className="px-4 py-3 text-left border-b border-purple-200">
                       1 Porsiyon
                     </th>
                     <th className="px-4 py-3 text-left border-b border-purple-200">
@@ -412,9 +409,6 @@ export function FruidExchangeList({
                       >
                         <td className="px-4 py-3 border-b border-gray-100">
                           {fruit.turkishName}
-                        </td>
-                        <td className="px-4 py-3 border-b border-gray-100 italic text-purple-700">
-                          {fruit.englishName}
                         </td>
                         <td className="px-4 py-3 border-b border-gray-100 text-purple-700">
                           {fruit.portion}
@@ -453,9 +447,6 @@ export function FruidExchangeList({
                       Yiyecek Adı
                     </th>
                     <th className="px-4 py-3 text-left border-b border-yellow-200">
-                      İngilizce Adı
-                    </th>
-                    <th className="px-4 py-3 text-left border-b border-yellow-200">
                       1 Porsiyon
                     </th>
                     <th className="px-4 py-3 text-left border-b border-yellow-200">
@@ -478,9 +469,6 @@ export function FruidExchangeList({
                     >
                       <td className="px-4 py-3 border-b border-gray-100">
                         {fruit.turkishName}
-                      </td>
-                      <td className="px-4 py-3 border-b border-gray-100 italic text-yellow-700">
-                        {fruit.englishName}
                       </td>
                       <td className="px-4 py-3 border-b border-gray-100 text-yellow-700">
                         {fruit.portion}
@@ -518,9 +506,6 @@ export function FruidExchangeList({
                       Yiyecek Adı
                     </th>
                     <th className="px-4 py-3 text-left border-b border-green-200">
-                      İngilizce Adı
-                    </th>
-                    <th className="px-4 py-3 text-left border-b border-green-200">
                       1 Porsiyon
                     </th>
                     <th className="px-4 py-3 text-left border-b border-green-200">
@@ -544,9 +529,6 @@ export function FruidExchangeList({
                       >
                         <td className="px-4 py-3 border-b border-gray-100">
                           {fruit.turkishName}
-                        </td>
-                        <td className="px-4 py-3 border-b border-gray-100 italic text-green-700">
-                          {fruit.englishName}
                         </td>
                         <td className="px-4 py-3 border-b border-gray-100 text-green-700">
                           {fruit.portion}

@@ -54,20 +54,20 @@ interface CategoryConfig {
 
 const categories: CategoryConfig[] = [
   {
-    category: "weight",
-    label: "Weight",
-    icon: Circle,
-    color: "bg-gray-100 text-gray-500",
-    activeColor:
-      "bg-gradient-to-br from-orange-400 to-orange-500 text-white shadow-lg shadow-orange-200",
-  },
-  {
     category: "wake-up-time",
     label: "Wake up time",
     icon: Sunrise,
     color: "bg-gray-100 text-gray-500",
     activeColor:
       "bg-gradient-to-br from-amber-400 to-yellow-500 text-white shadow-lg shadow-amber-200",
+  },
+  {
+    category: "weight",
+    label: "Weight",
+    icon: Circle,
+    color: "bg-gray-100 text-gray-500",
+    activeColor:
+      "bg-gradient-to-br from-orange-400 to-orange-500 text-white shadow-lg shadow-orange-200",
   },
   {
     category: "activity",
@@ -286,151 +286,150 @@ export function LandingPage({
 
   return (
     <div className="max-w-6xl mx-auto p-4 md:p-6 pb-8">
-        {/* Date Header with Picker */}
-        <div className="mb-8 mt-2">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h1 className="text-foreground mb-1">
-                Great to see you {getUserInitials()}.
-              </h1>
-            </div>
-
-            <div className="flex items-center gap-3">
-              {/* Date Navigation */}
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={goToPreviousDay}
-                  className="h-9 w-9 rounded-xl hover:bg-gray-100"
-                >
-                  <ChevronLeft
-                    className="w-5 h-5"
-                    strokeWidth={2}
-                  />
-                </Button>
-
-                <Popover
-                  open={isCalendarOpen}
-                  onOpenChange={setIsCalendarOpen}
-                >
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className="px-4 rounded-xl hover:bg-gray-50 border-gray-200"
-                    >
-                      <CalendarIcon
-                        className="w-4 h-4 mr-2"
-                        strokeWidth={2}
-                      />
-                      {formatDateShort()}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent
-                    className="w-auto p-0 rounded-2xl"
-                    align="start"
-                  >
-                    <Calendar
-                      mode="single"
-                      selected={selectedDate}
-                      onSelect={handleCalendarSelect}
-                      initialFocus
-                      disabled={(date) =>
-                        disableFutureDates(date)
-                      }
-                    />
-                  </PopoverContent>
-                </Popover>
-
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={goToNextDay}
-                  className="h-9 w-9 rounded-xl hover:bg-gray-100"
-                  disabled={isNextDayDisabled()}
-                >
-                  <ChevronRight
-                    className="w-5 h-5"
-                    strokeWidth={2}
-                  />
-                </Button>
-              </div>
-
-
-            </div>
+      {/* Date Header with Picker */}
+      <div className="mb-8 mt-2">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h1 className="text-foreground mb-1">
+              Merhaba {getUserInitials()}.
+            </h1>
           </div>
-        </div>
 
-        {/* Category Thumbnails */}
-        <div className="mb-6">
-          <div className="grid grid-cols-3 md:grid-cols-5 gap-3">
-            {categories.map((cat) => {
-              const Icon = cat.icon;
-              const hasEntry = categoriesWithEntries.has(
-                cat.category,
-              );
-              const isActive = !hasEntry;
+          <div className="flex items-center gap-3">
+            {/* Date Navigation */}
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={goToPreviousDay}
+                className="h-9 w-9 rounded-xl hover:bg-gray-100"
+              >
+                <ChevronLeft
+                  className="w-5 h-5"
+                  strokeWidth={2}
+                />
+              </Button>
 
-              return (
-                <button
-                  key={cat.category}
-                  onClick={() => onCategoryClick(cat.category)}
-                  className={`p-4 rounded-2xl transition-all ${
-                    isActive
-                      ? `${cat.activeColor} hover:scale-105 transform`
-                      : `${cat.color} hover:bg-gray-200`
-                  }`}
-                >
-                  <div className="flex flex-col items-center gap-2">
-                    <Icon
-                      className="w-6 h-6 md:w-7 md:h-7"
+              <Popover
+                open={isCalendarOpen}
+                onOpenChange={setIsCalendarOpen}
+              >
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="px-4 rounded-xl hover:bg-gray-50 border-gray-200"
+                  >
+                    <CalendarIcon
+                      className="w-4 h-4 mr-2"
                       strokeWidth={2}
                     />
-                    <span className="text-xs text-center leading-tight">
-                      {cat.label}
-                    </span>
-                  </div>
-                </button>
-              );
-            })}
+                    {formatDateShort()}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent
+                  className="w-auto p-0 rounded-2xl"
+                  align="start"
+                >
+                  <Calendar
+                    mode="single"
+                    selected={selectedDate}
+                    onSelect={handleCalendarSelect}
+                    initialFocus
+                    disabled={(date) =>
+                      disableFutureDates(date)
+                    }
+                  />
+                </PopoverContent>
+              </Popover>
+
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={goToNextDay}
+                className="h-9 w-9 rounded-xl hover:bg-gray-100"
+                disabled={isNextDayDisabled()}
+              >
+                <ChevronRight
+                  className="w-5 h-5"
+                  strokeWidth={2}
+                />
+              </Button>
+            </div>
           </div>
         </div>
+      </div>
 
-        {/* Log Summary */}
-        <div className="bg-white rounded-2xl p-5 border border-border shadow-sm">
-          <h2 className="mb-4 text-foreground">Log Entries</h2>
+      {/* Category Thumbnails */}
+      <div className="mb-6">
+        <div className="grid grid-cols-3 md:grid-cols-5 gap-3">
+          {categories.map((cat) => {
+            const Icon = cat.icon;
+            const hasEntry = categoriesWithEntries.has(
+              cat.category,
+            );
+            const isActive = !hasEntry;
 
-          {sortedLogs.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground">
-              <p>No entries logged for this date</p>
-              <p className="text-sm mt-2">
-                Tap a category above to start logging
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-1">
-              {sortedLogs.map((log) => {
-                const categoryConfig = categories.find(
-                  (c) => c.category === log.category,
-                );
-                const Icon = categoryConfig?.icon;
+            return (
+              <button
+                key={cat.category}
+                onClick={() => onCategoryClick(cat.category)}
+                className={`p-4 rounded-2xl transition-all ${
+                  isActive
+                    ? `${cat.activeColor} hover:scale-105 transform`
+                    : `${cat.color} hover:bg-gray-200`
+                }`}
+              >
+                <div className="flex flex-col items-center gap-2">
+                  <Icon
+                    className="w-6 h-6 md:w-7 md:h-7"
+                    strokeWidth={2}
+                  />
+                  <span className="text-xs text-center leading-tight">
+                    {cat.label}
+                  </span>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
 
-                return (
-                  <div
-                    key={log.id}
-                    className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition-colors group"
-                  >
-                    {Icon && (
-                      <div
-                        className={`p-2 rounded-xl ${categoryConfig?.color} flex-shrink-0`}
-                      >
-                        <Icon
-                          className="w-4 h-4"
-                          strokeWidth={2}
-                        />
-                      </div>
-                    )}
-                    <div className="flex-1 min-w-0 flex items-center gap-2 flex-wrap">
+      {/* Log Summary */}
+      <div className="bg-white rounded-2xl p-5 border border-border shadow-sm">
+        <h2 className="mb-4 text-foreground">Log Entries</h2>
+
+        {sortedLogs.length === 0 ? (
+          <div className="text-center py-12 text-muted-foreground">
+            <p>No entries logged for this date</p>
+            <p className="text-sm mt-2">
+              Tap a category above to start logging
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-1">
+            {sortedLogs.map((log) => {
+              const categoryConfig = categories.find(
+                (c) => c.category === log.category,
+              );
+              const Icon = categoryConfig?.icon;
+
+              return (
+                <div
+                  key={log.id}
+                  className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition-colors group"
+                >
+                  {Icon && (
+                    <div
+                      className={`p-2 rounded-xl ${categoryConfig?.color} flex-shrink-0`}
+                    >
+                      <Icon
+                        className="w-4 h-4"
+                        strokeWidth={2}
+                      />
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap mb-1">
                       <span className="text-muted-foreground text-sm flex-shrink-0">
                         {formatTime(log.timestamp)}
                       </span>
@@ -447,23 +446,33 @@ export function LandingPage({
                         {log.content}
                       </span>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => onDeleteLog(log.id)}
-                      className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive h-8 w-8 rounded-lg"
-                    >
-                      <Trash2
-                        className="w-4 h-4"
-                        strokeWidth={2}
-                      />
-                    </Button>
+                    {log.imageUrl && (
+                      <div className="mt-2">
+                        <img
+                          src={log.imageUrl}
+                          alt={`${log.category} photo`}
+                          className="rounded-lg max-h-32 object-cover border border-gray-200"
+                        />
+                      </div>
+                    )}
                   </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onDeleteLog(log.id)}
+                    className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive h-8 w-8 rounded-lg"
+                  >
+                    <Trash2
+                      className="w-4 h-4"
+                      strokeWidth={2}
+                    />
+                  </Button>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
+    </div>
   );
 }

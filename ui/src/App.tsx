@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { LandingPage } from "./components/LandingPage";
 import { CategoryInput } from "./components/CategoryInput";
 import { FruidExchangeList } from "./components/FruidExchangeList";
+import { MyLists } from "./components/MyLists";
 import { Login } from "./components/Login";
 import { Toaster } from "./components/ui/sonner";
 import { Sidebar } from "./components/Sidebar";
@@ -32,6 +33,7 @@ export interface LogItem {
   content: string;
   date: string;
   timestamp: number;
+  imageUrl?: string; // Optional image for food categories
 }
 
 export default function App() {
@@ -200,7 +202,7 @@ export default function App() {
     localStorage.setItem("dietLogs", JSON.stringify(logs));
   }, [logs]);
 
-  const addLog = (category: Category, content: string) => {
+  const addLog = (category: Category, content: string, imageUrl?: string) => {
     const dateStr = selectedDate.toISOString().split("T")[0];
     const selectedDateBase = new Date(dateStr).getTime();
 
@@ -258,6 +260,7 @@ export default function App() {
       content,
       date: dateStr,
       timestamp: timestamp,
+      ...(imageUrl && { imageUrl }), // Only include imageUrl if provided
     };
     setLogs([newLog, ...logs]);
 
@@ -369,6 +372,18 @@ export default function App() {
       case "fruid-exchange":
         return (
           <FruidExchangeList
+            isSidebarCollapsed={isSidebarCollapsed}
+            onSidebarToggle={() =>
+              setIsSidebarCollapsed(!isSidebarCollapsed)
+            }
+            onPageChange={handlePageChange}
+            userEmail={userEmail}
+            onLogout={handleLogout}
+          />
+        );
+      case "my-lists":
+        return (
+          <MyLists
             isSidebarCollapsed={isSidebarCollapsed}
             onSidebarToggle={() =>
               setIsSidebarCollapsed(!isSidebarCollapsed)
