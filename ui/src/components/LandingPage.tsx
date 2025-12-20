@@ -46,7 +46,7 @@ interface LandingPageProps {
   onDateChange: (date: Date) => void;
   userEmail?: string;
   onLogout?: () => void;
-  onAddLog?: (category: Category, content: string) => void;
+  onAddLog?: (category: Category, content: string, imageUrl?: string) => void;
 }
 
 interface CategoryConfig {
@@ -307,6 +307,46 @@ export function LandingPage({
     }
   };
 
+  const handleMealsClick = () => {
+    // Determine which meal to log based on what's missing
+    const hasMeal = (mealType: Category) => categoriesWithEntries.has(mealType);
+    
+    // Check current time to suggest appropriate meal
+    const currentHour = new Date().getHours();
+    
+    // If breakfast not logged and it's before 2pm, suggest breakfast
+    if (!hasMeal("breakfast") && currentHour < 14) {
+      setSelectedCategory("breakfast");
+      setIsFoodModalOpen(true);
+    }
+    // If snacks not logged and it's between 2pm-6pm, suggest snacks
+    else if (!hasMeal("snacks") && currentHour >= 14 && currentHour < 18) {
+      setSelectedCategory("snacks");
+      setIsFoodModalOpen(true);
+    }
+    // If dinner not logged and it's after 6pm, suggest dinner
+    else if (!hasMeal("dinner") && currentHour >= 18) {
+      setSelectedCategory("dinner");
+      setIsFoodModalOpen(true);
+    }
+    // Otherwise, default to the first missing meal
+    else if (!hasMeal("breakfast")) {
+      setSelectedCategory("breakfast");
+      setIsFoodModalOpen(true);
+    } else if (!hasMeal("snacks")) {
+      setSelectedCategory("snacks");
+      setIsFoodModalOpen(true);
+    } else if (!hasMeal("dinner")) {
+      setSelectedCategory("dinner");
+      setIsFoodModalOpen(true);
+    }
+    // If all meals logged, default to breakfast to allow adding another
+    else {
+      setSelectedCategory("breakfast");
+      setIsFoodModalOpen(true);
+    }
+  };
+
   const handleShowerSubmit = (time: string) => {
     if (onAddLog) {
       onAddLog("shower", time);
@@ -345,9 +385,9 @@ export function LandingPage({
     setIsActivityModalOpen(false);
   };
 
-  const handleFoodSubmit = (content: string) => {
+  const handleFoodSubmit = (content: string, imageUrl?: string) => {
     if (onAddLog && selectedCategory) {
-      onAddLog(selectedCategory, content);
+      onAddLog(selectedCategory, content, imageUrl);
     }
     setIsFoodModalOpen(false);
   };
@@ -638,7 +678,10 @@ export function LandingPage({
           </button>
 
           {/* Meals Metric */}
-          <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl sm:rounded-2xl p-3 sm:p-6 border border-slate-700">
+          <button
+            onClick={handleMealsClick}
+            className="bg-slate-800/50 backdrop-blur-sm rounded-xl sm:rounded-2xl p-3 sm:p-6 border border-slate-700 hover:border-green-500 transition-all group"
+          >
             <div className="flex flex-col items-center">
               <div className="relative w-20 h-20 sm:w-32 sm:h-32 mb-2 sm:mb-4">
                 {/* Mobile circles */}
@@ -696,10 +739,10 @@ export function LandingPage({
                 </div>
               </div>
               <p className="text-xs sm:text-sm font-semibold text-slate-300 uppercase tracking-wider">
-                Meals <ChevronRight className="inline w-3 h-3 sm:w-4 sm:h-4" />
+                Meals <ChevronRight className="inline w-3 h-3 sm:w-4 sm:h-4 group-hover:text-green-400 transition-colors" />
               </p>
             </div>
-          </div>
+          </button>
 
           {/* Hydration Metric */}
           <button
