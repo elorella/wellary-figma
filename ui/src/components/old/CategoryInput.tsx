@@ -1,4 +1,4 @@
-import { Category, LogItem } from '../App';
+import { Category, LogItem } from '../../App';
 import { FoodCategoryInput } from './FoodCategoryInput';
 import { WeightInput } from './WeightInput';
 import { TimeInput } from './TimeInput';

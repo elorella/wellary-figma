@@ -1,5 +1,3 @@
-import { User, Settings, LogOut } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,17 +6,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { Button } from "./ui/button";
+import { Avatar, AvatarFallback } from "./ui/avatar";
+import { LogOut, User } from "lucide-react";
 
 interface ProfileDropdownProps {
   userEmail?: string;
-  onPageChange?: (page: string) => void;
   onLogout?: () => void;
 }
 
 export function ProfileDropdown({
   userEmail = "user@example.com",
-  onPageChange,
   onLogout,
 }: ProfileDropdownProps) {
   const getUserInitials = () => {
@@ -30,49 +27,32 @@ export function ProfileDropdown({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          className="relative h-10 w-10 rounded-full hover:bg-gray-100"
-        >
-          <Avatar className="h-9 w-9 ring-2 ring-slate-500/20">
-            <AvatarImage src="" alt="User" />
-            <AvatarFallback className="bg-gradient-to-br from-slate-400 to-slate-500 text-white">
+        <button className="rounded-full focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-slate-900">
+          <Avatar className="h-8 w-8 cursor-pointer">
+            <AvatarFallback className="bg-gradient-to-br from-orange-400 to-orange-500 text-white">
               {getUserInitials()}
             </AvatarFallback>
           </Avatar>
-        </Button>
+        </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent
-        className="w-56 rounded-2xl"
-        align="end"
-        forceMount
-      >
-        <DropdownMenuLabel className="font-normal">
+      <DropdownMenuContent align="end" className="w-56 rounded-xl bg-slate-800 border-slate-700">
+        <DropdownMenuLabel>
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">
-              Wellary User
-            </p>
-            <p className="text-xs leading-none text-muted-foreground">
+            <p className="text-sm leading-none text-white">My Account</p>
+            <p className="text-xs leading-none text-slate-400">
               {userEmail}
             </p>
           </div>
         </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          className="rounded-xl cursor-pointer"
-          onClick={() => onPageChange?.("reach-out")}
-        >
+        <DropdownMenuSeparator className="bg-slate-700" />
+        <DropdownMenuItem className="cursor-pointer rounded-lg text-white focus:bg-slate-700 focus:text-white">
           <User className="mr-2 h-4 w-4" />
-          <span>Reach out to Nazli</span>
+          <span>Profile</span>
         </DropdownMenuItem>
-        <DropdownMenuItem className="rounded-xl cursor-pointer">
-          <Settings className="mr-2 h-4 w-4" />
-          <span>Settings</span>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
+        <DropdownMenuSeparator className="bg-slate-700" />
         <DropdownMenuItem
-          className="rounded-xl cursor-pointer text-destructive focus:text-destructive"
           onClick={onLogout}
+          className="cursor-pointer text-red-400 focus:text-red-400 focus:bg-slate-700 rounded-lg"
         >
           <LogOut className="mr-2 h-4 w-4" />
           <span>Log out</span>

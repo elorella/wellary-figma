@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { LogItem } from '../App';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
+import { LogItem } from '../../App';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
 
 interface WeightInputProps {
   onSubmit: (content: string) => void;

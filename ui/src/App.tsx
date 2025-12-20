@@ -1,14 +1,9 @@
 import { useState, useEffect } from "react";
 import { LandingPage } from "./components/LandingPage";
-import { CategoryInput } from "./components/CategoryInput";
-import { FruidExchangeList } from "./components/FruidExchangeList";
-import { MyLists } from "./components/MyLists";
+import { CategoryInput } from "./components/old/CategoryInput";
 import { Login } from "./components/Login";
 import { Toaster } from "./components/ui/sonner";
-import { Sidebar } from "./components/Sidebar";
-import { ProfileDropdown } from "./components/ProfileDropdown";
-import { ArrowLeft } from "lucide-react";
-import { Button } from "./components/ui/button";
+import { toast } from "sonner@2.0.3";
 
 export type Category =
   | "weight"
@@ -45,155 +40,19 @@ export default function App() {
   const [selectedDate, setSelectedDate] = useState<Date>(
     new Date(),
   );
-  const [currentPage, setCurrentPage] =
-    useState<string>("home");
-  const [isSidebarCollapsed, setIsSidebarCollapsed] =
-    useState(false);
-
-  // Check for existing authentication on mount
-  useEffect(() => {
-    const savedAuth = localStorage.getItem("wellaryAuth");
-    if (savedAuth) {
-      const authData = JSON.parse(savedAuth);
-      setIsAuthenticated(true);
-      setUserEmail(authData.email);
-    }
-  }, []);
 
   // Load logs from localStorage on mount
   useEffect(() => {
     const savedLogs = localStorage.getItem("dietLogs");
     if (savedLogs) {
       setLogs(JSON.parse(savedLogs));
-    } else {
-      // Add sample data for today
-      const today = new Date().toISOString().split("T")[0];
-      const baseTime = new Date(today).getTime();
+    }
 
-      const sampleLogs: LogItem[] = [
-        // No time entries (set to early morning)
-        {
-          id: "1",
-          category: "weight",
-          content: "51.2",
-          date: today,
-          timestamp: baseTime + 1000,
-        },
-        {
-          id: "2",
-          category: "shower",
-          content: "No",
-          date: today,
-          timestamp: baseTime + 2000,
-        },
-        {
-          id: "3",
-          category: "anything-else",
-          content: "No not really",
-          date: today,
-          timestamp: baseTime + 3000,
-        },
-        {
-          id: "4",
-          category: "stomach-feeling",
-          content: "Ok",
-          date: today,
-          timestamp: baseTime + 4000,
-        },
-        {
-          id: "5",
-          category: "liquid",
-          content: "2L water",
-          date: today,
-          timestamp: baseTime + 5000,
-        },
-
-        // 08:00
-        {
-          id: "6",
-          category: "wake-up-time",
-          content: "8:00",
-          date: today,
-          timestamp: baseTime + 8 * 60 * 60 * 1000,
-        },
-
-        // 09:00
-        {
-          id: "7",
-          category: "activity",
-          content: "09:00–09:40 Walking",
-          date: today,
-          timestamp: baseTime + 9 * 60 * 60 * 1000,
-        },
-        {
-          id: "8",
-          category: "supplements",
-          content: "Mg citrate",
-          date: today,
-          timestamp: baseTime + 9 * 60 * 60 * 1000 + 1000,
-        },
-        {
-          id: "9",
-          category: "working-hours",
-          content: "09:00–18:00",
-          date: today,
-          timestamp: baseTime + 9 * 60 * 60 * 1000 + 2000,
-        },
-
-        // 12:00
-        {
-          id: "10",
-          category: "breakfast",
-          content: "12:00–12:30 Eggs, cheese, bread",
-          date: today,
-          timestamp: baseTime + 12 * 60 * 60 * 1000,
-        },
-        {
-          id: "11",
-          category: "supplements",
-          content: "Vitamin D",
-          date: today,
-          timestamp: baseTime + 12 * 60 * 60 * 1000 + 1000,
-        },
-
-        // 14:00
-        {
-          id: "12",
-          category: "poopy",
-          content: "Style",
-          date: today,
-          timestamp: baseTime + 14 * 60 * 60 * 1000,
-        },
-
-        // 15:00
-        {
-          id: "13",
-          category: "snacks",
-          content: "15:00–15:15 apple",
-          date: today,
-          timestamp: baseTime + 15 * 60 * 60 * 1000,
-        },
-
-        // 21:00
-        {
-          id: "14",
-          category: "wind-down",
-          content: "21:00",
-          date: today,
-          timestamp: baseTime + 21 * 60 * 60 * 1000,
-        },
-
-        // 22:00
-        {
-          id: "15",
-          category: "sleep",
-          content: "22:00",
-          date: today,
-          timestamp: baseTime + 22 * 60 * 60 * 1000,
-        },
-      ];
-
-      setLogs(sampleLogs);
+    // Check if user is already logged in
+    const savedEmail = localStorage.getItem("userEmail");
+    if (savedEmail) {
+      setIsAuthenticated(true);
+      setUserEmail(savedEmail);
     }
   }, []);
 
@@ -202,111 +61,16 @@ export default function App() {
     localStorage.setItem("dietLogs", JSON.stringify(logs));
   }, [logs]);
 
-  const addLog = (category: Category, content: string, imageUrl?: string) => {
-    const dateStr = selectedDate.toISOString().split("T")[0];
-    const selectedDateBase = new Date(dateStr).getTime();
-
-    // Extract time from content to determine timestamp for ordering
-    let timestamp = Date.now(); // default to current time
-
-    // Parse time from content based on category
-    let timeMatch: RegExpMatchArray | null = null;
-
-    if (
-      category === "activity" ||
-      category === "working-hours"
-    ) {
-      // Format: "09:00–09:40 Walking" or "09:00–17:00"
-      timeMatch = content.match(/^(\d{1,2}):(\d{2})/);
-    } else if (
-      category === "breakfast" ||
-      category === "snacks" ||
-      category === "dinner"
-    ) {
-      // Format: "12:30 Oats, banana"
-      timeMatch = content.match(/^(\d{1,2}):(\d{2})/);
-    } else if (
-      category === "shower" ||
-      category === "wind-down" ||
-      category === "sleep" ||
-      category === "wake-up-time"
-    ) {
-      // Format: "09:00" or "8:00"
-      timeMatch = content.match(/^(\d{1,2}):(\d{2})/);
-    }
-
-    if (timeMatch) {
-      const hours = parseInt(timeMatch[1], 10);
-      const minutes = parseInt(timeMatch[2], 10);
-      timestamp =
-        selectedDateBase +
-        hours * 60 * 60 * 1000 +
-        minutes * 60 * 1000;
-    } else {
-      // For entries without time (weight, liquid, supplements, poopy, stomach-feeling, anything-else)
-      // Use a very early time (1 second, 2 seconds, etc.) to keep them at the top
-      const existingLogsCount = logs.filter(
-        (log) =>
-          log.date === dateStr &&
-          !log.content.match(/^\d{1,2}:\d{2}/),
-      ).length;
-      timestamp =
-        selectedDateBase + (existingLogsCount + 1) * 1000;
-    }
-
-    const newLog: LogItem = {
-      id: Date.now().toString(),
-      category,
-      content,
-      date: dateStr,
-      timestamp: timestamp,
-      ...(imageUrl && { imageUrl }), // Only include imageUrl if provided
-    };
-    setLogs([newLog, ...logs]);
-
-    // Check for weight celebration
-    if (category === "weight") {
-      // Replace comma with period for parsing (support both decimal separators)
-      const normalizedContent = content.replace(',', '.');
-      const newWeight = parseFloat(normalizedContent);
-      if (!isNaN(newWeight)) {
-        // Get yesterday's date
-        const yesterday = new Date(selectedDate);
-        yesterday.setDate(yesterday.getDate() - 1);
-        const yesterdayStr = yesterday
-          .toISOString()
-          .split("T")[0];
-
-        // Find yesterday's weight
-        const yesterdayWeightLog = logs.find(
-          (log) =>
-            log.category === "weight" &&
-            log.date === yesterdayStr,
-        );
-
-        if (yesterdayWeightLog) {
-          // Also normalize yesterday's weight (it might have comma or period)
-          const normalizedYesterdayContent = yesterdayWeightLog.content.replace(',', '.');
-          const yesterdayWeight = parseFloat(
-            normalizedYesterdayContent,
-          );
-          if (
-            !isNaN(yesterdayWeight) &&
-            newWeight < yesterdayWeight
-          ) {
-            const differenceKg = yesterdayWeight - newWeight;
-            const differenceGrams = Math.round(
-              differenceKg * 1000,
-            );
-            return `celebration:${differenceGrams}`; // Return difference in grams
-          }
-        }
-      }
-    }
+  const handleLogin = (email: string) => {
+    setIsAuthenticated(true);
+    setUserEmail(email);
+    localStorage.setItem("userEmail", email);
   };
 
-  const deleteLog = (id: string) => {
-    setLogs(logs.filter((log) => log.id !== id));
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setUserEmail("");
+    localStorage.removeItem("userEmail");
   };
 
   const handleCategoryClick = (category: Category) => {
@@ -317,160 +81,141 @@ export default function App() {
     setSelectedCategory(null);
   };
 
+  const handleAddLog = (
+    category: Category,
+    content: string,
+    imageUrl?: string,
+  ) => {
+    const selectedDateBase = new Date(selectedDate);
+    selectedDateBase.setHours(0, 0, 0, 0);
+    const selectedDateTimestamp = selectedDateBase.getTime();
+
+    // Get existing logs for the selected date
+    const selectedDateStr =
+      selectedDate.toISOString().split("T")[0];
+    const existingLogsForDate = logs.filter(
+      (log) => log.date === selectedDateStr,
+    );
+
+    let timestamp: number;
+
+    // Categories that should use time from content
+    const timeBasedCategories = [
+      "activity",
+      "breakfast",
+      "snacks",
+      "dinner",
+      "shower",
+      "wind-down",
+      "sleep",
+      "wake-up-time",
+      "working-hours",
+    ];
+
+    if (timeBasedCategories.includes(category)) {
+      // Try to parse time from content
+      const timeMatch = content.match(/^(\d{1,2}):(\d{2})/);
+      if (timeMatch) {
+        const hours = parseInt(timeMatch[1], 10);
+        const minutes = parseInt(timeMatch[2], 10);
+        timestamp =
+          selectedDateTimestamp +
+          hours * 60 * 60 * 1000 +
+          minutes * 60 * 1000;
+      } else {
+        // Fallback to early morning
+        timestamp =
+          selectedDateTimestamp +
+          (existingLogsForDate.length + 1) * 1000;
+      }
+    } else {
+      // For non-time categories, assign very early timestamps
+      timestamp =
+        selectedDateTimestamp +
+        (existingLogsForDate.length + 1) * 1000;
+    }
+
+    const newLog: LogItem = {
+      id: Date.now().toString(),
+      category,
+      content,
+      date: selectedDateStr,
+      timestamp,
+      imageUrl,
+    };
+
+    setLogs([...logs, newLog]);
+
+    // Weight loss celebration
+    if (category === "weight") {
+      const newWeight = parseFloat(content);
+      const yesterday = new Date(selectedDate);
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayStr =
+        yesterday.toISOString().split("T")[0];
+
+      const yesterdayWeightLog = logs.find(
+        (log) =>
+          log.category === "weight" &&
+          log.date === yesterdayStr,
+      );
+
+      if (yesterdayWeightLog) {
+        const yesterdayWeight = parseFloat(
+          yesterdayWeightLog.content,
+        );
+        if (
+          !isNaN(yesterdayWeight) &&
+          newWeight < yesterdayWeight
+        ) {
+          const differenceKg = yesterdayWeight - newWeight;
+          const differenceGrams = Math.round(
+            differenceKg * 1000,
+          );
+          toast(`🎉 You lost ${differenceGrams}g!`);
+        }
+      }
+    }
+
+    setSelectedCategory(null);
+  };
+
+  const handleDeleteLog = (id: string) => {
+    setLogs(logs.filter((log) => log.id !== id));
+  };
+
   const handleDateChange = (date: Date) => {
     setSelectedDate(date);
   };
 
-  const handlePageChange = (page: string) => {
-    setCurrentPage(page);
-    setSelectedCategory(null); // Clear category when navigating
-  };
-
-  const handleLoginSuccess = (email: string) => {
-    setIsAuthenticated(true);
-    setUserEmail(email);
-    localStorage.setItem("wellaryAuth", JSON.stringify({ email }));
-  };
-
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    setUserEmail("");
-    localStorage.removeItem("wellaryAuth");
-  };
-
-  const renderMainContent = () => {
-    if (selectedCategory) {
-      return (
-        <CategoryInput
-          category={selectedCategory}
-          onAddLog={addLog}
-          onBack={handleBack}
-          logs={logs}
-          selectedDate={selectedDate}
-        />
-      );
-    }
-
-    switch (currentPage) {
-      case "home":
-        return (
-          <LandingPage
-            logs={logs}
-            selectedDate={selectedDate}
-            onCategoryClick={handleCategoryClick}
-            onDeleteLog={deleteLog}
-            onDateChange={handleDateChange}
-            isSidebarCollapsed={isSidebarCollapsed}
-            onSidebarToggle={() =>
-              setIsSidebarCollapsed(!isSidebarCollapsed)
-            }
-            onPageChange={handlePageChange}
-            userEmail={userEmail}
-            onLogout={handleLogout}
-          />
-        );
-      case "fruid-exchange":
-        return (
-          <FruidExchangeList
-            isSidebarCollapsed={isSidebarCollapsed}
-            onSidebarToggle={() =>
-              setIsSidebarCollapsed(!isSidebarCollapsed)
-            }
-            onPageChange={handlePageChange}
-            userEmail={userEmail}
-            onLogout={handleLogout}
-          />
-        );
-      case "my-lists":
-        return (
-          <MyLists
-            isSidebarCollapsed={isSidebarCollapsed}
-            onSidebarToggle={() =>
-              setIsSidebarCollapsed(!isSidebarCollapsed)
-            }
-            onPageChange={handlePageChange}
-            userEmail={userEmail}
-            onLogout={handleLogout}
-          />
-        );
-      default:
-        return (
-          <LandingPage
-            logs={logs}
-            selectedDate={selectedDate}
-            onCategoryClick={handleCategoryClick}
-            onDeleteLog={deleteLog}
-            onDateChange={handleDateChange}
-            isSidebarCollapsed={isSidebarCollapsed}
-            onSidebarToggle={() =>
-              setIsSidebarCollapsed(!isSidebarCollapsed)
-            }
-            onPageChange={handlePageChange}
-            userEmail={userEmail}
-            onLogout={handleLogout}
-          />
-        );
-    }
-  };
-
-  // If not authenticated, show login page
   if (!isAuthenticated) {
+    return <Login onLogin={handleLogin} />;
+  }
+
+  if (selectedCategory) {
     return (
-      <>
-        <Login onLoginSuccess={handleLoginSuccess} />
-        <Toaster />
-      </>
+      <CategoryInput
+        category={selectedCategory}
+        onAddLog={handleAddLog}
+        onBack={handleBack}
+        logs={logs}
+        selectedDate={selectedDate}
+      />
     );
   }
 
   return (
     <>
-      <div className="flex min-h-screen bg-background">
-        {/* Sidebar */}
-        <Sidebar
-          isCollapsed={isSidebarCollapsed}
-          onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-          activePage={selectedCategory ? "home" : currentPage}
-          onPageChange={handlePageChange}
-        />
-
-        {/* Main Content Area */}
-        <div className={`flex-1 flex flex-col transition-all duration-300 ${isSidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
-          {/* Top Header */}
-          <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <div className="flex h-16 items-center justify-between px-6">
-              <div className="flex items-center gap-4">
-                {selectedCategory && (
-                  <>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={handleBack}
-                      className="rounded-xl"
-                    >
-                      <ArrowLeft className="h-5 w-5" />
-                    </Button>
-                    <h1 className="text-xl">
-                      {selectedCategory.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
-                    </h1>
-                  </>
-                )}
-              </div>
-              
-              <ProfileDropdown
-                userEmail={userEmail}
-                onPageChange={handlePageChange}
-                onLogout={handleLogout}
-              />
-            </div>
-          </header>
-
-          {/* Page Content */}
-          <main className="flex-1 overflow-auto">
-            {renderMainContent()}
-          </main>
-        </div>
-      </div>
+      <LandingPage
+        logs={logs}
+        selectedDate={selectedDate}
+        onCategoryClick={handleCategoryClick}
+        onDeleteLog={handleDeleteLog}
+        onDateChange={handleDateChange}
+        userEmail={userEmail}
+        onLogout={handleLogout}
+        onAddLog={handleAddLog}
+      />
       <Toaster />
     </>
   );

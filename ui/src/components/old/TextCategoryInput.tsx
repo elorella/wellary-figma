@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { Category } from '../App';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { Textarea } from './ui/textarea';
+import { Category } from '../../App';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
+import { Textarea } from '../ui/textarea';
 
 interface TextCategoryInputProps {
   category: Category;
