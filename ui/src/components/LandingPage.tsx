@@ -213,6 +213,23 @@ export function LandingPage({
   const sleepEntriesCount = selectedDateLogs.filter(log => log.category === "sleep").length;
   const mealEntriesCount = selectedDateLogs.filter(l => ['breakfast', 'snacks', 'dinner'].includes(l.category)).length;
 
+  // Get sleep hours from the first sleep entry
+  const getSleepHours = (): string => {
+    const sleepLogs = selectedDateLogs.filter(log => log.category === "sleep");
+    if (sleepLogs.length === 0) return "--";
+    
+    // Get the first sleep entry (or you could sum them all if multiple)
+    const firstSleepLog = sleepLogs[0];
+    const hours = parseFloat(firstSleepLog.content);
+    
+    if (isNaN(hours)) return "--";
+    
+    // Format with 1 decimal place if needed, otherwise show whole number
+    return hours % 1 === 0 ? `${hours}h` : `${hours.toFixed(1)}h`;
+  };
+
+  const sleepHoursDisplay = getSleepHours();
+
   // Calculate hydration (liquid intake) in liters
   const calculateHydrationLiters = (): number => {
     const liquidLogs = selectedDateLogs.filter(log => log.category === "liquid");
@@ -732,7 +749,7 @@ export function LandingPage({
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center">
                   <span className="text-lg sm:text-3xl font-bold text-white">
-                    {categoriesWithEntries.has("sleep") ? "8h" : "--"}
+                    {sleepHoursDisplay}
                   </span>
                 </div>
               </div>
