@@ -209,6 +209,61 @@ export function LandingPage({
     selectedDateLogs.map((log) => log.category)
   );
 
+  // Count entries for metrics
+  const sleepEntriesCount = selectedDateLogs.filter(log => log.category === "sleep").length;
+  const mealEntriesCount = selectedDateLogs.filter(l => ['breakfast', 'snacks', 'dinner'].includes(l.category)).length;
+
+  // Calculate hydration (liquid intake) in liters
+  const calculateHydrationLiters = (): number => {
+    const liquidLogs = selectedDateLogs.filter(log => log.category === "liquid");
+    let totalLiters = 0;
+
+    liquidLogs.forEach(log => {
+      const content = log.content.toLowerCase();
+      
+      // Match patterns like "2L", "2 L", "2l", "2 l"
+      const literMatch = content.match(/(\d+(?:\.\d+)?)\s*l(?:iters?)?/i);
+      if (literMatch) {
+        totalLiters += parseFloat(literMatch[1]);
+        return;
+      }
+
+      // Match patterns like "500ml", "500 ml", "500mL"
+      const mlMatch = content.match(/(\d+(?:\.\d+)?)\s*ml/i);
+      if (mlMatch) {
+        totalLiters += parseFloat(mlMatch[1]) / 1000;
+        return;
+      }
+
+      // Match patterns like "8oz", "8 oz"
+      const ozMatch = content.match(/(\d+(?:\.\d+)?)\s*oz/i);
+      if (ozMatch) {
+        totalLiters += parseFloat(ozMatch[1]) * 0.0295735; // 1 oz = 0.0295735 L
+        return;
+      }
+
+      // Match patterns like "2 cups", "2cup"
+      const cupMatch = content.match(/(\d+(?:\.\d+)?)\s*cups?/i);
+      if (cupMatch) {
+        totalLiters += parseFloat(cupMatch[1]) * 0.236588; // 1 cup = 0.236588 L
+        return;
+      }
+
+      // Match patterns like "2 glasses", "2glass"
+      const glassMatch = content.match(/(\d+(?:\.\d+)?)\s*glass(?:es)?/i);
+      if (glassMatch) {
+        totalLiters += parseFloat(glassMatch[1]) * 0.25; // Assume 1 glass = 250ml
+        return;
+      }
+    });
+
+    return totalLiters;
+  };
+
+  const hydrationLiters = calculateHydrationLiters();
+  const hydrationTarget = 2; // 2L target
+  const hydrationPercentage = Math.min((hydrationLiters / hydrationTarget) * 100, 100);
+
   // Sort logs chronologically
   const sortedLogs = [...selectedDateLogs].sort(
     (a, b) => a.timestamp - b.timestamp
@@ -615,7 +670,11 @@ export function LandingPage({
           {/* Sleep Metric */}
           <button
             onClick={() => handleCategoryClickWithModal("sleep")}
-            className="bg-slate-800/50 backdrop-blur-sm rounded-xl sm:rounded-2xl p-3 sm:p-6 border border-slate-700 hover:border-blue-500 transition-all group"
+            className={`bg-slate-800/50 backdrop-blur-sm rounded-xl sm:rounded-2xl p-3 sm:p-6 border transition-all group ${
+              sleepEntriesCount > 1 
+                ? "border-amber-500 hover:border-amber-400" 
+                : "border-slate-700 hover:border-blue-500"
+            }`}
           >
             <div className="flex flex-col items-center">
               <div className="relative w-20 h-20 sm:w-32 sm:h-32 mb-2 sm:mb-4">
@@ -630,18 +689,20 @@ export function LandingPage({
                     fill="none"
                     className="text-slate-700"
                   />
-                  <circle
-                    cx="40"
-                    cy="40"
-                    r="35"
-                    stroke="currentColor"
-                    strokeWidth="6"
-                    fill="none"
-                    strokeDasharray={`${2 * Math.PI * 35}`}
-                    strokeDashoffset={`${2 * Math.PI * 35 * 0.25}`}
-                    className="text-blue-400"
-                    strokeLinecap="round"
-                  />
+                  {categoriesWithEntries.has("sleep") && (
+                    <circle
+                      cx="40"
+                      cy="40"
+                      r="35"
+                      stroke="currentColor"
+                      strokeWidth="6"
+                      fill="none"
+                      strokeDasharray={`${2 * Math.PI * 35}`}
+                      strokeDashoffset={0}
+                      className={sleepEntriesCount > 1 ? "text-amber-400" : "text-blue-400"}
+                      strokeLinecap="round"
+                    />
+                  )}
                 </svg>
                 {/* Desktop circles */}
                 <svg className="hidden sm:block w-32 h-32 transform -rotate-90">
@@ -654,25 +715,31 @@ export function LandingPage({
                     fill="none"
                     className="text-slate-700"
                   />
-                  <circle
-                    cx="64"
-                    cy="64"
-                    r="56"
-                    stroke="currentColor"
-                    strokeWidth="8"
-                    fill="none"
-                    strokeDasharray={`${2 * Math.PI * 56}`}
-                    strokeDashoffset={`${2 * Math.PI * 56 * 0.25}`}
-                    className="text-blue-400"
-                    strokeLinecap="round"
-                  />
+                  {categoriesWithEntries.has("sleep") && (
+                    <circle
+                      cx="64"
+                      cy="64"
+                      r="56"
+                      stroke="currentColor"
+                      strokeWidth="8"
+                      fill="none"
+                      strokeDasharray={`${2 * Math.PI * 56}`}
+                      strokeDashoffset={0}
+                      className={sleepEntriesCount > 1 ? "text-amber-400" : "text-blue-400"}
+                      strokeLinecap="round"
+                    />
+                  )}
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-lg sm:text-3xl font-bold text-white">8h</span>
+                  <span className="text-lg sm:text-3xl font-bold text-white">
+                    {categoriesWithEntries.has("sleep") ? "8h" : "--"}
+                  </span>
                 </div>
               </div>
               <p className="text-xs sm:text-sm font-semibold text-slate-300 uppercase tracking-wider">
-                Sleep <ChevronRight className="inline w-3 h-3 sm:w-4 sm:h-4 group-hover:text-blue-400 transition-colors" />
+                Sleep <ChevronRight className={`inline w-3 h-3 sm:w-4 sm:h-4 transition-colors ${
+                  sleepEntriesCount > 1 ? "group-hover:text-amber-400" : "group-hover:text-blue-400"
+                }`} />
               </p>
             </div>
           </button>
@@ -680,7 +747,11 @@ export function LandingPage({
           {/* Meals Metric */}
           <button
             onClick={handleMealsClick}
-            className="bg-slate-800/50 backdrop-blur-sm rounded-xl sm:rounded-2xl p-3 sm:p-6 border border-slate-700 hover:border-green-500 transition-all group"
+            className={`bg-slate-800/50 backdrop-blur-sm rounded-xl sm:rounded-2xl p-3 sm:p-6 border transition-all group ${
+              mealEntriesCount > 3 
+                ? "border-amber-500 hover:border-amber-400" 
+                : "border-slate-700 hover:border-green-500"
+            }`}
           >
             <div className="flex flex-col items-center">
               <div className="relative w-20 h-20 sm:w-32 sm:h-32 mb-2 sm:mb-4">
@@ -695,18 +766,36 @@ export function LandingPage({
                     fill="none"
                     className="text-slate-700"
                   />
-                  <circle
-                    cx="40"
-                    cy="40"
-                    r="35"
-                    stroke="currentColor"
-                    strokeWidth="6"
-                    fill="none"
-                    strokeDasharray={`${2 * Math.PI * 35}`}
-                    strokeDashoffset={`${2 * Math.PI * 35 * 0.35}`}
-                    className="text-green-400"
-                    strokeLinecap="round"
-                  />
+                  {/* Green progress ring (up to 3 meals) */}
+                  {mealEntriesCount > 0 && (
+                    <circle
+                      cx="40"
+                      cy="40"
+                      r="35"
+                      stroke="currentColor"
+                      strokeWidth="6"
+                      fill="none"
+                      strokeDasharray={`${2 * Math.PI * 35}`}
+                      strokeDashoffset={`${2 * Math.PI * 35 * (1 - Math.min(mealEntriesCount, 3) / 3)}`}
+                      className="text-green-400"
+                      strokeLinecap="round"
+                    />
+                  )}
+                  {/* Amber ring for extra meals (beyond 3) */}
+                  {mealEntriesCount > 3 && (
+                    <circle
+                      cx="40"
+                      cy="40"
+                      r="35"
+                      stroke="currentColor"
+                      strokeWidth="6"
+                      fill="none"
+                      strokeDasharray={`${2 * Math.PI * 35}`}
+                      strokeDashoffset={`${2 * Math.PI * 35 * (1 - (mealEntriesCount - 3) / 3)}`}
+                      className="text-amber-400"
+                      strokeLinecap="round"
+                    />
+                  )}
                 </svg>
                 {/* Desktop circles */}
                 <svg className="hidden sm:block w-32 h-32 transform -rotate-90">
@@ -719,27 +808,47 @@ export function LandingPage({
                     fill="none"
                     className="text-slate-700"
                   />
-                  <circle
-                    cx="64"
-                    cy="64"
-                    r="56"
-                    stroke="currentColor"
-                    strokeWidth="8"
-                    fill="none"
-                    strokeDasharray={`${2 * Math.PI * 56}`}
-                    strokeDashoffset={`${2 * Math.PI * 56 * 0.35}`}
-                    className="text-green-400"
-                    strokeLinecap="round"
-                  />
+                  {/* Green progress ring (up to 3 meals) */}
+                  {mealEntriesCount > 0 && (
+                    <circle
+                      cx="64"
+                      cy="64"
+                      r="56"
+                      stroke="currentColor"
+                      strokeWidth="8"
+                      fill="none"
+                      strokeDasharray={`${2 * Math.PI * 56}`}
+                      strokeDashoffset={`${2 * Math.PI * 56 * (1 - Math.min(mealEntriesCount, 3) / 3)}`}
+                      className="text-green-400"
+                      strokeLinecap="round"
+                    />
+                  )}
+                  {/* Amber ring for extra meals (beyond 3) */}
+                  {mealEntriesCount > 3 && (
+                    <circle
+                      cx="64"
+                      cy="64"
+                      r="56"
+                      stroke="currentColor"
+                      strokeWidth="8"
+                      fill="none"
+                      strokeDasharray={`${2 * Math.PI * 56}`}
+                      strokeDashoffset={`${2 * Math.PI * 56 * (1 - (mealEntriesCount - 3) / 3)}`}
+                      className="text-amber-400"
+                      strokeLinecap="round"
+                    />
+                  )}
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center">
                   <span className="text-lg sm:text-3xl font-bold text-white">
-                    {selectedDateLogs.filter(l => ['breakfast', 'snacks', 'dinner'].includes(l.category)).length}/3
+                    {mealEntriesCount}/3
                   </span>
                 </div>
               </div>
               <p className="text-xs sm:text-sm font-semibold text-slate-300 uppercase tracking-wider">
-                Meals <ChevronRight className="inline w-3 h-3 sm:w-4 sm:h-4 group-hover:text-green-400 transition-colors" />
+                Meals <ChevronRight className={`inline w-3 h-3 sm:w-4 sm:h-4 transition-colors ${
+                  mealEntriesCount > 3 ? "group-hover:text-amber-400" : "group-hover:text-green-400"
+                }`} />
               </p>
             </div>
           </button>
@@ -770,7 +879,7 @@ export function LandingPage({
                     strokeWidth="6"
                     fill="none"
                     strokeDasharray={`${2 * Math.PI * 35}`}
-                    strokeDashoffset={`${2 * Math.PI * 35 * 0.4}`}
+                    strokeDashoffset={`${2 * Math.PI * 35 * (1 - hydrationPercentage / 100)}`}
                     className="text-cyan-400"
                     strokeLinecap="round"
                   />
@@ -794,13 +903,13 @@ export function LandingPage({
                     strokeWidth="8"
                     fill="none"
                     strokeDasharray={`${2 * Math.PI * 56}`}
-                    strokeDashoffset={`${2 * Math.PI * 56 * 0.4}`}
+                    strokeDashoffset={`${2 * Math.PI * 56 * (1 - hydrationPercentage / 100)}`}
                     className="text-cyan-400"
                     strokeLinecap="round"
                   />
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-lg sm:text-3xl font-bold text-white">2L</span>
+                  <span className="text-lg sm:text-3xl font-bold text-white">{hydrationLiters.toFixed(1)}L</span>
                 </div>
               </div>
               <p className="text-xs sm:text-sm font-semibold text-slate-300 uppercase tracking-wider">

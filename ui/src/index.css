@@ -1306,6 +1306,10 @@
     border-style: dashed;
   }
 
+  .border-amber-500 {
+    border-color: var(--color-amber-500);
+  }
+
   .border-blue-800\/50 {
     border-color: color-mix(in srgb, oklch(.424 .199 265.638) 50%, transparent);
   }
@@ -2290,6 +2294,11 @@
     box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
   }
 
+  .ring {
+    --tw-ring-shadow: var(--tw-ring-inset, ) 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color, currentcolor);
+    box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+  }
+
   .ring-offset-background {
     --tw-ring-offset-color: var(--background);
   }
@@ -2366,6 +2375,12 @@
   }
 
   @media (hover: hover) {
+    .group-hover\:text-amber-400:is(:where(.group):hover *) {
+      color: var(--color-amber-400);
+    }
+  }
+
+  @media (hover: hover) {
     .group-hover\:text-blue-400:is(:where(.group):hover *) {
       color: var(--color-blue-400);
     }
@@ -2374,6 +2389,12 @@
   @media (hover: hover) {
     .group-hover\:text-cyan-400:is(:where(.group):hover *) {
       color: var(--color-cyan-400);
+    }
+  }
+
+  @media (hover: hover) {
+    .group-hover\:text-green-400:is(:where(.group):hover *) {
+      color: var(--color-green-400);
     }
   }
 
@@ -2482,6 +2503,12 @@
   }
 
   @media (hover: hover) {
+    .hover\:border-amber-400:hover {
+      border-color: var(--color-amber-400);
+    }
+  }
+
+  @media (hover: hover) {
     .hover\:border-blue-400:hover {
       border-color: var(--color-blue-400);
     }
@@ -2502,6 +2529,12 @@
   @media (hover: hover) {
     .hover\:border-cyan-500:hover {
       border-color: var(--color-cyan-500);
+    }
+  }
+
+  @media (hover: hover) {
+    .hover\:border-green-500:hover {
+      border-color: var(--color-green-500);
     }
   }
 
@@ -2680,6 +2713,12 @@
   @media (hover: hover) {
     .hover\:text-accent-foreground:hover {
       color: var(--accent-foreground);
+    }
+  }
+
+  @media (hover: hover) {
+    .hover\:text-cyan-400:hover {
+      color: var(--color-cyan-400);
     }
   }
 
