@@ -28,7 +28,7 @@ export function QuickTextModal({
 
   // Get category-specific placeholder and description
   const getCategoryPlaceholder = () => {
-    if (category === "liquid") return "e.g., 2L water, 1 cup coffee";
+    if (category === "liquid") return "e.g., 2L, 400ml, 2 cups, 4 glasses";
     return placeholder;
   };
 
@@ -61,6 +61,11 @@ export function QuickTextModal({
     }
   };
 
+  const handleExampleClick = (example: string) => {
+    setContent(example);
+    setError("");
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md w-[calc(100%-2rem)] bg-slate-800 border-slate-700 text-white">
@@ -86,6 +91,41 @@ export function QuickTextModal({
             />
             {error && (
               <p className="text-xs text-red-400 mt-1">{error}</p>
+            )}
+            {category === "liquid" && (
+              <div className="mt-3">
+                <p className="text-xs text-slate-400 mb-2">Quick fill:</p>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleExampleClick("2L water")}
+                    className="px-3 py-1.5 text-xs rounded-lg bg-slate-700 border border-slate-600 text-slate-300 hover:bg-slate-600 hover:border-cyan-500 hover:text-cyan-400 transition-colors"
+                  >
+                    2L
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleExampleClick("400ml water")}
+                    className="px-3 py-1.5 text-xs rounded-lg bg-slate-700 border border-slate-600 text-slate-300 hover:bg-slate-600 hover:border-cyan-500 hover:text-cyan-400 transition-colors"
+                  >
+                    400ml
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleExampleClick("2 cups water")}
+                    className="px-3 py-1.5 text-xs rounded-lg bg-slate-700 border border-slate-600 text-slate-300 hover:bg-slate-600 hover:border-cyan-500 hover:text-cyan-400 transition-colors"
+                  >
+                    2 cups
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleExampleClick("4 glasses water")}
+                    className="px-3 py-1.5 text-xs rounded-lg bg-slate-700 border border-slate-600 text-slate-300 hover:bg-slate-600 hover:border-cyan-500 hover:text-cyan-400 transition-colors"
+                  >
+                    4 glasses
+                  </button>
+                </div>
+              </div>
             )}
           </div>
 
